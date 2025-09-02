@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 
 public class ImportCSVDialog extends Dialog
 {
@@ -54,6 +56,43 @@ public class ImportCSVDialog extends Dialog
             
             if (fp.isEmpty()) throw new EmptyFieldError();
 
+            java.util.List<Airport> airports = new java.util.ArrayList<>();
+            java.util.List<Flight> flights = new java.util.ArrayList<>();
+            
+            try (BufferedReader reader = new BufferedReader(new FileReader(fp)))
+            {
+                String line;
+                while ((line = reader.readLine()) != null)
+                {
+                    String[] cols = line.split(",");
+
+                    if (cols.length == 4) // airport
+                    {
+                        String name = cols[0].trim();
+                        String code = cols[1].trim();
+                        float x = Float.parseFloat(cols[2].trim());
+                        float y = Float.parseFloat(cols[3].trim());
+                        
+                        Airport a = new Airport(name, code, x, y);
+                        airports.add(a);
+                    }
+                    else if (cols.length == 5) // flight
+                    {
+                        String takeoff = cols[0].trim();
+                        String landing = cols[1].trim();
+                        int h = Integer.parseInt(cols[2].trim());
+                        int m = Integer.parseInt(cols[3].trim());
+                        int dur = Integer.parseInt(cols[4].trim());
+                        
+                        Flight f = new Flight(takeoff, landing, h, m, dur);
+                        flights.add(f);
+                    }
+                    else
+                    {
+                        // error
+                    }
+                }
+            }
             // find file
             // read line by line and store in some temporary buffer
             // make sure its proper csv format
@@ -61,7 +100,26 @@ public class ImportCSVDialog extends Dialog
             // if line fails basic input form for flight or airport then abort
             // otherwise read all that into temporary buffer(s) and then add to managers
 
+            for (Flight f : flights)
+            {
+                FlightManager.Instance.addFlight(f);
+                AirplaneTrafficSimulator.Instance.addFlight(f);
+            }
+            for (Airport a : airports)
+            {
+                AirportManager.Instance.addAirport(a);
+                AirplaneTrafficSimulator.Instance.addAirport(a);
+            }
+            
             dispose();
+        }
+        catch (IOException ioe)
+        {
+            errorLabel.setText("Error reading file: " + ioe.getMessage());
+        }
+        catch (NumberFormatException e)
+        {
+            errorLabel.setText("Coordinates must be valid numbers");
         }
         catch (Exception e)
         {

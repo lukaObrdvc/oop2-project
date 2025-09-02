@@ -5,6 +5,10 @@ import java.awt.event.*;
 // @todo status label like running, finished, paused
 // @todo improve messages for FlightDialog
 // @todo oop hierarchy for dialogs???
+// @todo make , character illegal for input...
+
+// @todo error handling for CSV stuff...
+// @todo perhaps do combined adding, refreshing and stuff, when adding flights/airports...??
 
 public class AirplaneTrafficSimulator extends Frame
 {

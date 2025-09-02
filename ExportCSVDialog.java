@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 
 public class ExportCSVDialog extends Dialog
 {
@@ -54,10 +56,29 @@ public class ExportCSVDialog extends Dialog
             
             if (fp.isEmpty()) throw new EmptyFieldError();
 
-            // loop through all airports and flights and add one line per each into the file, comma separated
-            // write file
+            try (PrintWriter writer = new PrintWriter(fp))
+            {
+                Collection<Airport> airports = AirportManager.Instance.getAllAirports();
+                Collection<Flight> flights = FlightManager.Instance.getAllFlights();
+
+                for (Airport a : airports)
+                {
+                    String line = a.getName() + "," + a.getCode() + "," + Float.toString(a.getX()) + "," + Float.toString(a.getY());
+                    writer.println(line);
+                }
+
+                for (Flight f : flights)
+                {
+                    String line = f.getTakeoff() + "," + f.getLanding() + "," + Integer.toString(f.getHour()) + "," + Integer.toString(f.getMin()) + "," + Integer.toString(f.getDur());
+                    writer.println(line);
+                }
+            }
 
             dispose();
+        }
+        catch (IOException ioe)
+        {
+            errorLabel.setText("Error writing file: " + ioe.getMessage());
         }
         catch (Exception e)
         {

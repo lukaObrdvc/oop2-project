@@ -14,8 +14,7 @@ public class FlightDialog extends Dialog
     {
         super(parent, "New flight", true); // true=modal
 
-        // setSize(200, 230);
-        setSize(500, 500);
+        setSize(200, 230);
         setResizable(false);
         setLayout(new BorderLayout());
         setLocationRelativeTo(parent);

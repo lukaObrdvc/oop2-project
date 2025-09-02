@@ -10,6 +10,7 @@ public class Airport
         if (xx < -90 || xx > 90) throw new BadCoordinatesError();
         if (yy < -90 || yy > 90) throw new BadCoordinatesError();
         if (c.length() != 3 || !(c.equals(c.toUpperCase()))) throw new BadCodeError();
+        // @todo this error is too big for the form...
         if (AirportManager.Instance.hasCode(c)) throw new NotUniqueError();
 
         name = n;
