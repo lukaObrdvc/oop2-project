@@ -1,8 +1,18 @@
 import java.awt.*;
 import java.awt.event.*;
 
+// @todo status label like running, finished, paused
+// @todo static class instead of singletons??
+// @todo improve messages for FlightDialog
+// @todo oop hierarchy for dialogs???
+
 public class AirplaneTrafficSimulator extends Frame
 {
+    public static final AirplaneTrafficSimulator Instance = new AirplaneTrafficSimulator();
+    
+    private Panel airportPanel;
+    private Panel flightTable;
+    
     public AirplaneTrafficSimulator()
     {
         super("Airplane Traffic Simulator");
@@ -10,13 +20,49 @@ public class AirplaneTrafficSimulator extends Frame
         MenuBar menuBar = new MenuBar();
 
         Menu flightMenu = new Menu("New");
-        flightMenu.add(new MenuItem("New Airport"));
-        flightMenu.add(new MenuItem("New Flight"));
+        MenuItem newAirport = new MenuItem("New Airport");
+        MenuItem newFlight = new MenuItem("New Flight");
+        newAirport.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    AirportDialog d = new AirportDialog(AirplaneTrafficSimulator.this);
+                    d.setVisible(true);
+                }
+            });
+        newFlight.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    FlightDialog d = new FlightDialog(AirplaneTrafficSimulator.this);
+                    d.setVisible(true);
+                }
+            });
+        flightMenu.add(newAirport);
+        flightMenu.add(newFlight);
         menuBar.add(flightMenu);
 
         Menu csvMenu = new Menu("CSV");
-        csvMenu.add(new MenuItem("Import from CSV"));
-        csvMenu.add(new MenuItem("Export to CSV"));
+        MenuItem importCSV = new MenuItem("Import from CSV");
+        MenuItem exportCSV = new MenuItem("Export to CSV");
+        importCSV.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    ImportCSVDialog d = new ImportCSVDialog(AirplaneTrafficSimulator.this);
+                    d.setVisible(true);
+                }
+            });        
+        exportCSV.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    ExportCSVDialog d = new ExportCSVDialog(AirplaneTrafficSimulator.this);
+                    d.setVisible(true);
+                }
+            });        
+        csvMenu.add(importCSV);
+        csvMenu.add(exportCSV);
         menuBar.add(csvMenu);
 
         setMenuBar(menuBar);
@@ -59,30 +105,10 @@ public class AirplaneTrafficSimulator extends Frame
         header.add(new Label("Minute"));
         header.add(new Label("Flight duration"));
         
-        Panel rows = new Panel(new GridLayout(0, 5));
-        
-        rows.add(new Label("Flight A"));
-        rows.add(new Label("Flight B"));
-        rows.add(new Label("Flight C"));
-        rows.add(new Label("Flight D"));
-        rows.add(new Label("Flight E"));
-        
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        rows.add(new Label("Flight E"));
-        
-        rows.add(new Label("Flight E"));
+        flightTable = new Panel(new GridLayout(0, 5));
         
         ScrollPane flightScrollablePanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
-        flightScrollablePanel.add(rows);
+        flightScrollablePanel.add(flightTable);
         flightScrollablePanel.setPreferredSize(new Dimension(300, 300));
 
         flightPanel.add(header, BorderLayout.NORTH);
@@ -93,17 +119,7 @@ public class AirplaneTrafficSimulator extends Frame
         flightPanelContainer.add(new Label("Flights", Label.CENTER), BorderLayout.NORTH);
         flightPanelContainer.add(flightPanel, BorderLayout.CENTER);
         
-        Panel airportPanel = new Panel(new GridLayout(0, 1, 0, 0));
-        airportPanel.add(new Checkbox("Airport A"));
-        airportPanel.add(new Checkbox("Airport B"));
-        airportPanel.add(new Checkbox("Airport C"));
-        airportPanel.add(new Checkbox("Airport D"));
-        airportPanel.add(new Checkbox("Airport E"));
-        airportPanel.add(new Checkbox("Airport E"));
-        airportPanel.add(new Checkbox("Airport E"));
-        airportPanel.add(new Checkbox("Airport E"));
-        airportPanel.add(new Checkbox("Airport E"));
-        airportPanel.add(new Checkbox("Airport E"));
+        airportPanel = new Panel(new GridLayout(0, 1, 0, 0));
 
         ScrollPane airportScrollablePanel = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
         airportScrollablePanel.add(airportPanel);
@@ -142,9 +158,26 @@ public class AirplaneTrafficSimulator extends Frame
             });
     }
 
+    public void addFlight(Flight f)
+    {
+        flightTable.add(new Label(f.getTakeoff()));
+        flightTable.add(new Label(f.getLanding()));
+        flightTable.add(new Label(Integer.toString(f.getHour())));
+        flightTable.add(new Label(Integer.toString(f.getMin())));
+        flightTable.add(new Label(Integer.toString(f.getDur())));
+        flightTable.validate();
+    }
+
+    public void addAirport(Airport a)
+    {
+        airportPanel.add(new Checkbox(a.getCode() + ": " + a.getName() + " (" + a.getX() + ", " + a.getY() + ")"));
+        // @todo set to checked immediately
+        airportPanel.validate();
+    }
+
     public static void main(String[] args)
     {
-        new AirplaneTrafficSimulator();
+        
     }
 }
 
