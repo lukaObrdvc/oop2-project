@@ -9,7 +9,6 @@ public class FlightManager
     public void addFlight(Flight f)
     {
         flights.add(f);
-        AirplaneTrafficSimulator.Instance.addFlight(f);
     }
 
     public Collection<Flight> getAllFlights()

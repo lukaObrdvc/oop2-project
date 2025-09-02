@@ -1,8 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
 
+// @todo static class instead of singletons for managers?
 // @todo status label like running, finished, paused
-// @todo static class instead of singletons??
 // @todo improve messages for FlightDialog
 // @todo oop hierarchy for dialogs???
 
@@ -138,7 +138,10 @@ public class AirplaneTrafficSimulator extends Frame
 
         setSize(800, 600);
         setVisible(true);
-
+        setLocationRelativeTo(null);
+        setExtendedState(Frame.MAXIMIZED_BOTH);
+        
+        
         // @todo...?:
         // why is spacing between elements unresponsive
         // some padding on bottom still

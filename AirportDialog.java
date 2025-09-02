@@ -78,6 +78,7 @@ public class AirportDialog extends Dialog
             
             Airport a = new Airport(n, c, xx, yy);
             AirportManager.Instance.addAirport(a);
+            AirplaneTrafficSimulator.Instance.addAirport(a);
             dispose();
         }
         catch (NumberFormatException e)
