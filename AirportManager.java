@@ -9,6 +9,7 @@ public class AirportManager
     public void addAirport(Airport a)
     {
         airports.put(a.getCode(), a);
+        AirplaneTrafficSimulator.Instance.addAirport(a);
     }
 
     public Airport getAirport(String code)

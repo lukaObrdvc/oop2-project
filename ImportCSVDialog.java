@@ -50,6 +50,8 @@ public class ImportCSVDialog extends Dialog
 
     private void onOk()
     {
+        int lineNum = 0;
+        
         try
         {
             String fp = filepath.getText().trim();
@@ -64,6 +66,8 @@ public class ImportCSVDialog extends Dialog
                 String line;
                 while ((line = reader.readLine()) != null)
                 {
+                    lineNum++;
+                    
                     String[] cols = line.split(",");
 
                     if (cols.length == 4) // airport
@@ -89,41 +93,42 @@ public class ImportCSVDialog extends Dialog
                     }
                     else
                     {
-                        // error
+                        throw new BadColumnCountError();
                     }
                 }
+                
+                if (lineNum == 0) throw new EmptyFileError();
             }
-            // find file
-            // read line by line and store in some temporary buffer
-            // make sure its proper csv format
-            // make sure there are enough columns
-            // if line fails basic input form for flight or airport then abort
-            // otherwise read all that into temporary buffer(s) and then add to managers
-
+            
             for (Flight f : flights)
             {
                 FlightManager.Instance.addFlight(f);
-                AirplaneTrafficSimulator.Instance.addFlight(f);
             }
             for (Airport a : airports)
             {
                 AirportManager.Instance.addAirport(a);
-                AirplaneTrafficSimulator.Instance.addAirport(a);
             }
             
             dispose();
         }
-        catch (IOException ioe)
+        catch (IOException e)
         {
-            errorLabel.setText("Error reading file: " + ioe.getMessage());
+            errorLabel.setText(e.getMessage());
         }
         catch (NumberFormatException e)
         {
-            errorLabel.setText("Coordinates must be valid numbers");
+            errorLabel.setText("Line " + Integer.toString(lineNum) + ": " + "Coordinates must be valid numbers");
         }
         catch (Exception e)
         {
-            errorLabel.setText(e.getMessage());
+            if (lineNum != 0)
+            {
+                errorLabel.setText("Line " + Integer.toString(lineNum) + ": " + e.getMessage());
+            }
+            else
+            {
+                errorLabel.setText(e.getMessage());
+            }
         }
     }
 }

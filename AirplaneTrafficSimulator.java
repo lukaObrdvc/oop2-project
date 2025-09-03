@@ -3,12 +3,10 @@ import java.awt.event.*;
 
 // @todo static class instead of singletons for managers?
 // @todo status label like running, finished, paused
-// @todo improve messages for FlightDialog
 // @todo oop hierarchy for dialogs???
-// @todo make , character illegal for input...
 
-// @todo error handling for CSV stuff...
-// @todo perhaps do combined adding, refreshing and stuff, when adding flights/airports...??
+// @todo more error handling for CSV stuff...
+// @todo fix the form to include all error space and so on... (NotUniqueError)
 
 public class AirplaneTrafficSimulator extends Frame
 {

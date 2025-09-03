@@ -76,9 +76,9 @@ public class ExportCSVDialog extends Dialog
 
             dispose();
         }
-        catch (IOException ioe)
+        catch (IOException e)
         {
-            errorLabel.setText("Error writing file: " + ioe.getMessage());
+            errorLabel.setText(e.getMessage());
         }
         catch (Exception e)
         {

@@ -84,7 +84,6 @@ public class FlightDialog extends Dialog
             
             Flight f = new Flight(takeoff, landing, hh, mm, dur);
             FlightManager.Instance.addFlight(f);
-            AirplaneTrafficSimulator.Instance.addFlight(f);
             dispose();
         }
         catch (NumberFormatException e)
