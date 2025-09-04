@@ -4,9 +4,23 @@ import java.awt.event.*;
 // @todo static class instead of singletons for managers?
 // @todo status label like running, finished, paused
 // @todo oop hierarchy for dialogs???
+// @todo disable creation of more singletons for every singleton..?
 
 // @todo more error handling for CSV stuff...
 // @todo fix the form to include all error space and so on... (NotUniqueError)
+
+
+// @todo...?:
+// why is spacing between elements unresponsive
+// some padding on bottom still
+// can i make resizing less crappy for redrawing?
+// checkbox group or something...?
+
+// @todo padding, centering...?
+
+// @todo disable a lot of stuff unless simulation is reseted??
+// @todo maybe better code drawing placement?
+
 
 public class AirplaneTrafficSimulator extends Frame
 {
@@ -14,6 +28,7 @@ public class AirplaneTrafficSimulator extends Frame
     
     private Panel airportPanel;
     private Panel flightTable;
+    private MapCanvas map;
     
     public AirplaneTrafficSimulator()
     {
@@ -82,16 +97,7 @@ public class AirplaneTrafficSimulator extends Frame
         controlPanel.add(reset);
         add(controlPanel, BorderLayout.NORTH);
 
-        Canvas map = new Canvas()
-            {
-                @Override
-                public void paint(Graphics g)
-                {
-                    Dimension size = getSize();
-                    g.setColor(Color.BLUE);
-                    g.fillRect(0, 0, size.width, size.height);
-                }
-            };
+        map = new MapCanvas();
         map.setBackground(Color.WHITE);
         map.setPreferredSize(null);
         add(map, BorderLayout.CENTER);
@@ -143,21 +149,10 @@ public class AirplaneTrafficSimulator extends Frame
         setLocationRelativeTo(null);
         setExtendedState(Frame.MAXIMIZED_BOTH);
         
-        
-        // @todo...?:
-        // why is spacing between elements unresponsive
-        // some padding on bottom still
-        // can i make resizing less crappy for redrawing?
-        // checkbox group or something...?
-
-        // @todo padding, centering...?
-
         addWindowListener(new WindowAdapter()
             {
                 public void windowClosing(WindowEvent we)
                 {
-                    // @todo maybe quit message first
-                    
                     System.exit(0);
                 }
             });
@@ -175,14 +170,29 @@ public class AirplaneTrafficSimulator extends Frame
 
     public void addAirport(Airport a)
     {
-        airportPanel.add(new Checkbox(a.getCode() + ": " + a.getName() + " (" + a.getX() + ", " + a.getY() + ")"));
-        // @todo set to checked immediately
+        Checkbox cb = new Checkbox(a.getCode() + ": " + a.getName() + " (" + a.getX() + ", " + a.getY() + ")");
+        cb.setState(true);
+        cb.addItemListener(e -> {
+                String code = cb.getLabel().substring(0, 3);
+                AirportManager.Instance.toggleHidden(code);
+            });
+        
+        airportPanel.add(cb);
         airportPanel.validate();
+    }
+
+    public void repaintMap()
+    {
+        map.repaint();
     }
 
     public static void main(String[] args)
     {
-        
+        Toolkit.getDefaultToolkit().addAWTEventListener(e -> {SessionExpirer.Instance.reset();},
+                                                        AWTEvent.MOUSE_EVENT_MASK |
+                                                        AWTEvent.KEY_EVENT_MASK   |
+                                                        AWTEvent.WINDOW_EVENT_MASK);
+        SessionExpirer.Instance.start();
     }
 }
 
