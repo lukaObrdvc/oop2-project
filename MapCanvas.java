@@ -5,6 +5,31 @@ public class MapCanvas extends Canvas
 {
     public static final int squareDim = 8;
     public static final int margin = 2;
+    public static final int blinkPeriod = 1000; // in milliseconds
+    private volatile static boolean blinkOn = false;
+    private static final Thread blinkThread = new Thread(() -> {
+            while (true)
+            {
+                try
+                {
+                    Thread.sleep(blinkPeriod);
+                    if (blinkOn) blinkOn = false;
+                    else blinkOn = true;
+                    // @speed if none is selected no need to repaint
+                    AirplaneTrafficSimulator.Instance.repaintMap();
+                }
+                catch (InterruptedException e)
+                {
+                    
+                }
+            }
+    });
+
+    static
+    {
+        blinkThread.setDaemon(true);
+        blinkThread.start();
+    }
     
     @Override
     public void paint(Graphics g)
@@ -13,31 +38,40 @@ public class MapCanvas extends Canvas
 
         int w = size.width;
         int h = size.height;
+
+        int half = squareDim / 2;
         
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, w, h);
 
-        g.setColor(Color.GRAY);
-        
         for (Airport a : AirportManager.Instance.getAllAirports())
         {
             if (AirportManager.Instance.getHidden(a.getCode())) continue;
+            
+            if (AirportManager.Instance.getSelected(a.getCode()))
+            {
+                if (blinkOn) g.setColor(Color.RED);
+                else         g.setColor(Color.GRAY);
+            } else
+            {
+                g.setColor(Color.GRAY);
+            }
             
             float x = a.getX();
             float y = a.getY();
             int px = toPixelX(x, w);
             int py = toPixelY(y, h);
 
-            g.fillRect(px - squareDim / 2, py - squareDim / 2, squareDim, squareDim);
+            g.fillRect(px - half, py - half, squareDim, squareDim);
 
             g.setColor(Color.WHITE);
 
-            int codeX = px + squareDim / 2 + 2;
-            int codeY = py + squareDim / 2+ 2;
+            int codeX = px + half + 2;
+            int codeY = py + half+ 2;
 
             if (codeX > w - margin)
             {
-                codeX = px - squareDim / 2 - 24;
+                codeX = px - half - 24;
             }
             if (codeY < margin)
             {
@@ -45,11 +79,33 @@ public class MapCanvas extends Canvas
             }
             if (codeY > h - margin)
             {
-                codeY = py - squareDim / 2 - 2;
+                codeY = py - half - 2;
             }
             
             g.drawString(a.getCode(), codeX, codeY);
-            g.setColor(Color.GRAY);
+        }
+    }
+
+    public void testCollision(int x, int y)
+    {
+        Dimension size = getSize();
+
+        int w = size.width;
+        int h = size.height;
+
+        int half = squareDim / 2;
+        
+        for (Airport a : AirportManager.Instance.getAllAirports())
+        {
+            int px = toPixelX(a.getX(), w);
+            int py = toPixelY(a.getY(), h);
+
+            if (x >= px - half && x <= px + half &&
+                y >= py - half && y <= py + half)
+            {
+                AirportManager.Instance.toggleSelected(a.getCode());
+                break; // only one airport per click
+            }
         }
     }
 

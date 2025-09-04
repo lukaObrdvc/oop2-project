@@ -6,11 +6,13 @@ public class AirportManager
     
     private HashMap<String, Airport> airports = new HashMap<>();
     private HashMap<String, Boolean> hidden = new HashMap<>();
+    private HashMap<String, Boolean> selected = new HashMap<>();
 
     public void addAirport(Airport a)
     {
         airports.put(a.getCode(), a);
         hidden.put(a.getCode(), false);
+        selected.put(a.getCode(), false);
         AirplaneTrafficSimulator.Instance.addAirport(a);
         AirplaneTrafficSimulator.Instance.repaintMap();
     }
@@ -45,6 +47,24 @@ public class AirportManager
     {
         if (hidden.get(code)) hidden.put(code, false);
         else hidden.put(code, true);
+        AirplaneTrafficSimulator.Instance.repaintMap();
+    }
+
+    public boolean getSelected(String code)
+    {
+        return selected.get(code);
+    }
+
+    public void setSelected(String code, boolean v)
+    {
+        selected.put(code, v);
+        AirplaneTrafficSimulator.Instance.repaintMap();
+    }
+
+    public void toggleSelected(String code)
+    {
+        if (selected.get(code)) selected.put(code, false);
+        else selected.put(code, true);
         AirplaneTrafficSimulator.Instance.repaintMap();
     }
 }

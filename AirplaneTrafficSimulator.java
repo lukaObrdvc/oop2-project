@@ -21,6 +21,7 @@ import java.awt.event.*;
 // @todo disable a lot of stuff unless simulation is reseted??
 // @todo maybe better code drawing placement?
 
+// @todo auto deselect when going to hidden?
 
 public class AirplaneTrafficSimulator extends Frame
 {
@@ -100,6 +101,14 @@ public class AirplaneTrafficSimulator extends Frame
         map = new MapCanvas();
         map.setBackground(Color.WHITE);
         map.setPreferredSize(null);
+        map.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    map.testCollision(e.getX(), e.getY());
+                }
+            });
+        
         add(map, BorderLayout.CENTER);
 
         Panel rightPanel = new Panel(new GridLayout(2, 1, 0, 0));
