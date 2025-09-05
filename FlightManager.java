@@ -10,10 +10,21 @@ public class FlightManager
     {
         flights.add(f);
         AirplaneTrafficSimulator.Instance.addFlight(f);
+        FlightSimulator.Instance.addContext();
     }
 
     public Collection<Flight> getAllFlights()
     {
         return Collections.unmodifiableList(flights);
+    }
+
+    public Flight getFlight(int i)
+    {
+        return flights.get(i);
+    }
+
+    public int numFlights()
+    {
+        return flights.size();
     }
 }

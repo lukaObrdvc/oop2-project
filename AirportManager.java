@@ -14,9 +14,8 @@ public class AirportManager
         hidden.put(a.getCode(), false);
         selected.put(a.getCode(), false);
         AirplaneTrafficSimulator.Instance.addAirport(a);
-        AirplaneTrafficSimulator.Instance.repaintMap();
     }
-
+    
     public Airport getAirport(String code)
     {
         return airports.get(code);
@@ -40,14 +39,12 @@ public class AirportManager
     public void setHidden(String code, boolean v)
     {
         hidden.put(code, v);
-        AirplaneTrafficSimulator.Instance.repaintMap();
     }
 
     public void toggleHidden(String code)
     {
         if (hidden.get(code)) hidden.put(code, false);
         else hidden.put(code, true);
-        AirplaneTrafficSimulator.Instance.repaintMap();
     }
 
     public boolean getSelected(String code)
@@ -58,13 +55,11 @@ public class AirportManager
     public void setSelected(String code, boolean v)
     {
         selected.put(code, v);
-        AirplaneTrafficSimulator.Instance.repaintMap();
     }
 
     public void toggleSelected(String code)
     {
         if (selected.get(code)) selected.put(code, false);
         else selected.put(code, true);
-        AirplaneTrafficSimulator.Instance.repaintMap();
     }
 }

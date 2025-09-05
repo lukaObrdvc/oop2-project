@@ -30,6 +30,8 @@ public class AirplaneTrafficSimulator extends Frame
     private Panel airportPanel;
     private Panel flightTable;
     private MapCanvas map;
+    private Label time;
+    private int acc = 0;
     
     public AirplaneTrafficSimulator()
     {
@@ -82,16 +84,40 @@ public class AirplaneTrafficSimulator extends Frame
         csvMenu.add(importCSV);
         csvMenu.add(exportCSV);
         menuBar.add(csvMenu);
-
+        
         setMenuBar(menuBar);
 
         setLayout(new BorderLayout());
 
         Panel controlPanel = new Panel(new FlowLayout());
-        Label time = new Label("Time: 00:00");
+        time = new Label("00:00");
         Button run = new Button("Run");
         Button pause = new Button("Pause");
         Button reset = new Button("Reset");
+        run.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    FlightSimulator.Instance.setSimulationRunning(true);
+                }
+            });
+        pause.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    FlightSimulator.Instance.setSimulationRunning(false);
+                }
+            });
+        reset.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    AirplaneTrafficSimulator.Instance.resetTime();
+                    FlightSimulator.Instance.setSimulationRunning(false);
+                    FlightSimulator.Instance.resetFlying();
+                }
+            });
+
         controlPanel.add(time);
         controlPanel.add(run);
         controlPanel.add(pause);
@@ -108,7 +134,6 @@ public class AirplaneTrafficSimulator extends Frame
                     map.testCollision(e.getX(), e.getY());
                 }
             });
-        
         add(map, BorderLayout.CENTER);
 
         Panel rightPanel = new Panel(new GridLayout(2, 1, 0, 0));
@@ -145,9 +170,7 @@ public class AirplaneTrafficSimulator extends Frame
         Panel airportPanelContainer = new Panel(new BorderLayout());
         airportPanelContainer.add(new Label("Airports", Label.CENTER), BorderLayout.NORTH);
         airportPanelContainer.add(airportScrollablePanel, BorderLayout.CENTER);
-        
-        // validate and repaint when adding new items
-
+ 
         rightPanel.add(flightPanelContainer);
         rightPanel.add(airportPanelContainer);
         
@@ -179,7 +202,7 @@ public class AirplaneTrafficSimulator extends Frame
 
     public void addAirport(Airport a)
     {
-        Checkbox cb = new Checkbox(a.getCode() + ": " + a.getName() + " (" + a.getX() + ", " + a.getY() + ")");
+        Checkbox cb = new Checkbox(a.getCode() + ": " + a.getName() + " (" + a.getX() + "," + a.getY() + ")");
         cb.setState(true);
         cb.addItemListener(e -> {
                 String code = cb.getLabel().substring(0, 3);
@@ -195,6 +218,30 @@ public class AirplaneTrafficSimulator extends Frame
         map.repaint();
     }
 
+    public synchronized void tick()
+    {
+        acc += 60;
+        acc = acc % (86400); // seconds in 24h
+        
+        int h = acc / 3600;
+        int m = (acc % 3600) / 60;
+
+        time.setText(String.format("%02d:%02d", h, m));
+        time.validate();
+    }
+
+    public void resetTime()
+    {
+        acc = 0;
+        time.setText("00:00");
+        time.validate();
+    }
+
+    public synchronized int acc()
+    {
+        return acc;
+    }
+
     public static void main(String[] args)
     {
         Toolkit.getDefaultToolkit().addAWTEventListener(e -> {SessionExpirer.Instance.reset();},
@@ -202,6 +249,11 @@ public class AirplaneTrafficSimulator extends Frame
                                                         AWTEvent.KEY_EVENT_MASK   |
                                                         AWTEvent.WINDOW_EVENT_MASK);
         SessionExpirer.Instance.start();
+
+        Thread rl = new Thread(new RenderLoop());
+
+        rl.setDaemon(true);
+        rl.start();
     }
 }
 
