@@ -5,7 +5,7 @@ public class FlyingContext
     public float endX;
     public float startY;
     public float endY;
-    public float startTime;
-    public float endTime;
+    public long startTime;
+    public long endTime;
     public boolean flying = false;
 }

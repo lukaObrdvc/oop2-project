@@ -85,6 +85,9 @@ public class MapCanvas extends Canvas
             
             if (!ctx.flying) continue;
 
+            // you need to ask if simulationRunning and pick prevT (which you remember after every tick or whatever)
+            // also it's stopping flying a bit later when hitting the airport??..
+
             long currentTime = System.currentTimeMillis();
 
             float div = ctx.endTime - ctx.startTime;
@@ -98,8 +101,11 @@ public class MapCanvas extends Canvas
                 FlightSimulator.Instance.toggleFlying(i);
             }
 
-            int px = (int)(ctx.startX + t * (ctx.endX - ctx.startX));
-            int py = (int)(ctx.startY + t * (ctx.endY - ctx.startY));
+            
+            int px = toPixelX(ctx.startX + t * (ctx.endX - ctx.startX), w);
+            int py = toPixelY(ctx.startY + t * (ctx.endY - ctx.startY), h);
+
+            System.out.println("DRAWING AT " + px + "," + py + ": (" + ctx.startX + "," + ctx.startY + ")->(" + ctx.endX + "," + ctx.startY + ")");
             
             g.setColor(Color.BLUE);
             g.fillOval(px, py, planeRadius, planeRadius);

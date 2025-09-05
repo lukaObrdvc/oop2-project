@@ -99,19 +99,27 @@ public class FlightSimulator
                 if (!ctx.flying) continue;
 
                 Flight f = FlightManager.Instance.getFlight(i);
-
+                
                 String startCode = f.getTakeoff();
                 String endCode = f.getLanding();
+                
+                System.out.println("FLYING: " + startCode + "-" + endCode);
                 
                 if (!AirportManager.Instance.hasCode(startCode)   ||
                     !AirportManager.Instance.hasCode(endCode)     ||
                      AirportManager.Instance.getHidden(startCode) ||
                      AirportManager.Instance.getHidden(endCode))
                 {
+                    System.out.println("STOPPED FLYING[0]: " + startCode + "-" + endCode);
                     ctx.flying = false;
                 }
 
-                if (currentTime >= ctx.endTime) ctx.flying = false;
+                if (currentTime >= ctx.endTime)
+                {
+                    System.out.println("start-end-current time: " + ctx.startTime + "-" + ctx.endTime + "  " + currentTime);
+                    System.out.println("STOPPED FLYING[1]: " + startCode + "-" + endCode);
+                    ctx.flying = false;
+                }
             }
         }
     }
@@ -147,8 +155,10 @@ public class FlightSimulator
                 long currentTime = System.currentTimeMillis();
 
                 ctx.startTime = currentTime;
-                ctx.endTime = currentTime + dur * 100; // 10 sim min = 1000 real ms  ->  1 sim min = 100 real ms
+                ctx.endTime = currentTime + dur * 100L; // 10 sim min = 1000 real ms  ->  1 sim min = 100 real ms
                 
+                System.out.println("Dur=" + dur + " -> endTime=" + (currentTime + dur * 100L));
+                System.out.println("INIT FLYING: " + f.getTakeoff() + "-" + f.getLanding());
                 ctx.flying = true;
             }
         }

@@ -31,7 +31,8 @@ public class AirplaneTrafficSimulator extends Frame
     private Panel flightTable;
     private MapCanvas map;
     private Label time;
-    private int acc = 0;
+    // private int acc = 0;
+    private int acc = 7*60*60;
     
     public AirplaneTrafficSimulator()
     {
